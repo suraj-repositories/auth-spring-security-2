@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Welcome</title>
+</head>
+
+<body>
+	<div th:if="${user == null}">
+		<h3>Welcome Guest</h3>
+		<small>You are current not loggend in</small><br>
+		<a th:href="@{/login}">Login</a>&nbsp;&nbsp;
+		<a th:href="@{/signup}">Signup</a>
+	</div>
+	<div th:if="${user}">
+		<h2>Hello <span th:text="${user.name}">Guest</span></h2>
+
+		Email : <span th:text="${user.email}"></span>
+		<br><br>
+		Date of Birth : <span th:text="${user.dob}"></span>
+		<br><br>
+
+		<span th:if="${user != null}">
+			ROLE -<br>
+			<span th:each="role : ${user.roles}">
+				<span th:text="${role.name}">DEFAULT</span> -
+				<span th:each="authority : ${role.authorities}">
+					<span th:text="${authority.name}">DEFAULT</span>,
+				</span><br>
+
+			</span>
+			<span th:if="${#lists.isEmpty(user.roles)}">No Roles Assigned</span>
+		</span>
+
+		<br><br>
+		<form th:action="@{/logout}" method="post"><button>LOGOUT</button></form>
+		<br><br>
+	</div>
+
+	<div th:if="${user!=null and authorityChecker.hasAuthority('ROLE_ADMIN')}">
+		<hr>
+		<form th:action="@{/create}" method="post">
+			Name : <input type="text" name="name" required><br><br>
+			Date of Birth: <input type="date" name="dob" required /><br><br>
+			Email : <input type="email" name="email" required><br><br>
+			Password: <input type="password" name="password" required /><br><br>
+			Role : <select name="role">
+				<option disabled selected>---select---</option>
+				<option>ADMIN</option>
+				<option>MANAGER</option>
+				<option>USER</option>
+			</select>
+			<small><br>
+				Admin : READ, WRITE, MANAGE, EXECUTE<br>
+				Manager: READ, WRITE, MANAGE<br>
+				User : READ, WRITE<br>
+			</small>
+			<br>
+			<input type="submit" value="submit" />
+		</form>
+		<hr>
+	</div>
+
+	<!-- MANAGER WORK -->
+	<div th:if="${authorityChecker.hasAuthority('ROLE_MANAGER')}">
+		YES I am the manager....<br>
+		Create Page ----- Update page ----- delete page ------ MANAGER
+	</div>
+
+	<!-- USER WORK -->
+	<div th:if="${authorityChecker.hasAuthority('ROLE_USER')}">
+		Create Page ----- Update page ----- delete page
+	</div>
+
+
+</body>
+
+</html>
